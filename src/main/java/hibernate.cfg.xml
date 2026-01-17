@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+                                         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+ <session-factory name="">
+  <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
+  <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/wms_sem4_db</property>
+  <property name="hibernate.connection.username">root</property>
+  <property name="hibernate.default_catalog">wms_sem4_db</property>
+  <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
+  <mapping class="com.example.demo.entities.Categories"/>
+  <mapping class="com.example.demo.entities.Companies"/>
+  <mapping class="com.example.demo.entities.Customers"/>
+  <mapping class="com.example.demo.entities.DeliveryItems"/>
+  <mapping class="com.example.demo.entities.DeliveryLogs"/>
+  <mapping class="com.example.demo.entities.DeliveryOrders"/>
+  <mapping class="com.example.demo.entities.DeliveryPartners"/>
+  <mapping class="com.example.demo.entities.Drivers"/>
+  <mapping class="com.example.demo.entities.GoodsIssueItems"/>
+  <mapping class="com.example.demo.entities.GoodsIssues"/>
+  <mapping class="com.example.demo.entities.GoodsReceiptItems"/>
+  <mapping class="com.example.demo.entities.GoodsReceipts"/>
+  <mapping class="com.example.demo.entities.Inventories"/>
+  <mapping class="com.example.demo.entities.InventoryLogs"/>
+  <mapping class="com.example.demo.entities.Permissions"/>
+  <mapping class="com.example.demo.entities.Products"/>
+  <mapping class="com.example.demo.entities.Roles"/>
+  <mapping class="com.example.demo.entities.Suppliers"/>
+  <mapping class="com.example.demo.entities.Trucks"/>
+  <mapping class="com.example.demo.entities.Units"/>
+  <mapping class="com.example.demo.entities.Users"/>
+  <mapping class="com.example.demo.entities.WarehouseLocations"/>
+  <mapping class="com.example.demo.entities.Warehouses"/>
+ </session-factory>
+</hibernate-configuration>
