@@ -77,8 +77,11 @@ public class UserServiceImpl implements UserService {
 	public boolean createCompanyAdmin(UserInsertDTO userInsertDTO) {
 		Users user = modelMapper.map(userInsertDTO, Users.class);
 		
-		if (user.getCompanies().getId() == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company To cannot be null");
+		if (user.getCompanies() == null || user.getCompanies().getId() == null) {
+		    throw new ResponseStatusException(
+		        HttpStatus.BAD_REQUEST,
+		        "Company To cannot be null"
+		    );
 		}
 		Roles adminRole = roleRepository
 	            .findByRoleName("ROLE_COMPANY_ADMIN");
@@ -99,8 +102,11 @@ public class UserServiceImpl implements UserService {
 
 		Long roleId = Long.parseLong(httpSession.getAttribute("roleId").toString());
 		if(roleId == 1) {
-			if (user.getCompanies().getId() == null) {
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Company To cannot be null");
+			if (user.getCompanies() == null || user.getCompanies().getId() == null) {
+			    throw new ResponseStatusException(
+			        HttpStatus.BAD_REQUEST,
+			        "Company To cannot be null"
+			    );
 			}
 		}else {
 			Long companyId = Long.parseLong(httpSession.getAttribute("companyId").toString());

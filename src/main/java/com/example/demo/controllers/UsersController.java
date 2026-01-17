@@ -5,6 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +34,8 @@ public class UsersController {
 	@Autowired
 	private UserService userService;
 	@Autowired
+	private AuthenticationManager authenticationManager;
+	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 	
 	@GetMapping(value = "find-all", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
@@ -52,24 +58,29 @@ public class UsersController {
 		}
 	}
 	
-//	@PostMapping(value = "login", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<Void> login(@RequestBody UserInsertDTO userInsertDTO) {
-//		return ResponseEntity.ok().build();
+//	@PostMapping("/wms_sem4/users/loginProcess")
+//	public ResponseEntity<?> login(@RequestBody UserInsertDTO user) {
+//
+//	    Authentication authentication =
+//	        authenticationManager.authenticate(
+//	            new UsernamePasswordAuthenticationToken(
+//	                user.getUsername(),
+//	                user.getPasswordHash()
+//	            )
+//	        );
+//
+//	    SecurityContextHolder.getContext().setAuthentication(authentication);
+//
+//	    return ResponseEntity.ok("Login success");
 //	}
 	
 	
 	@PostMapping(value = "createCompanyAdmin", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public ResponseEntity<Void> createCompanyAdmin(@RequestBody UserInsertDTO userInsertDTO) {
-		try {
 			userInsertDTO.setPasswordHash(passwordEncoder.encode(userInsertDTO.getPasswordHash()));
-			if (userService.createCompanyAdmin(userInsertDTO)) {
-				return new ResponseEntity<Void>(HttpStatus.OK);
-			} else {
-				return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
-			}
-		} catch (Exception e) {
-			return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
-		}
+			userService.createCompanyAdmin(userInsertDTO);
+			return new ResponseEntity<Void>(HttpStatus.OK);
+
 	}
 	
 	@PostMapping(value = "createCompanyStaff", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
