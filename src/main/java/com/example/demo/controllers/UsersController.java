@@ -20,11 +20,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dtos.CompaniesDTO;
 import com.example.demo.dtos.CompaniesInsertDTO;
+import com.example.demo.dtos.LoginRequest;
+import com.example.demo.dtos.LoginResult;
 import com.example.demo.dtos.UserDTO;
 import com.example.demo.dtos.UserInsertDTO;
 import com.example.demo.dtos.UserUpdateDTO;
+import com.example.demo.entities.Users;
 import com.example.demo.services.CompanyService;
 import com.example.demo.services.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 
 @RestController()
@@ -58,21 +64,32 @@ public class UsersController {
 		}
 	}
 	
-//	@PostMapping("/wms_sem4/users/loginProcess")
-//	public ResponseEntity<?> login(@RequestBody UserInsertDTO user) {
-//
-//	    Authentication authentication =
-//	        authenticationManager.authenticate(
-//	            new UsernamePasswordAuthenticationToken(
-//	                user.getUsername(),
-//	                user.getPasswordHash()
-//	            )
-//	        );
-//
-//	    SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//	    return ResponseEntity.ok("Login success");
-//	}
+	@PostMapping("/login")
+    public ResponseEntity<LoginResult> login(
+            @RequestBody LoginRequest request,
+            HttpServletRequest httpRequest) {
+
+        Authentication auth = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.getUsername(),
+                request.getPassword()
+            )
+        );
+
+        Users user = userService.findByUsername(request.getUsername());
+
+        HttpSession session = httpRequest.getSession(true);
+        session.setAttribute("userId", user.getId());
+        session.setAttribute("roleId", user.getRoles().getId());
+
+        if (user.getCompanies() != null && user.getCompanies().getId() != null) {
+            session.setAttribute("companyId", user.getCompanies().getId());
+        }
+
+        return ResponseEntity.ok(
+            new LoginResult(true, user.getId(), user.getRoles().getRoleName())
+        );
+    }
 	
 	
 	@PostMapping(value = "createCompanyAdmin", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)

@@ -40,8 +40,6 @@ import jakarta.servlet.http.HttpSession;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final WmsSem4BeApplication wmsSem4BeApplication;
-
 	@Autowired
 	private ModelMapper modelMapper;
 	@Autowired
@@ -53,9 +51,7 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private HttpSession httpSession;
 
-    UserServiceImpl(WmsSem4BeApplication wmsSem4BeApplication) {
-        this.wmsSem4BeApplication = wmsSem4BeApplication;
-    }
+
 	@Override
 	public List<UserDTO> findAll() {
 		List<Users> users = userRepository.findAll();
@@ -148,11 +144,7 @@ public class UserServiceImpl implements UserService {
 		Users user = userRepository.findByUsername(username);
 		System.out.println("AUTH TRY: " + username);
 		System.out.println("ROLE FROM DB = " + user.getRoles().getRoleName());
-		//		else {
-//			List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-//			authorities.add(new SimpleGrantedAuthority(user.getRoles().getRoleName()));
-//			return new User(username, user.getPasswordHash(), authorities);
-//		}
+
 		return new User(
 		        user.getUsername(),
 		        user.getPasswordHash(),

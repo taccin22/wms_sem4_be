@@ -7,6 +7,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.demo.entities.Users;
@@ -42,106 +44,74 @@ public class SecurityConfiguration {
 	static {
 		System.out.println("🔥 SECURITY CONFIG LOADED");
 	}
-	
+
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-	     return configuration.getAuthenticationManager();
+		return configuration.getAuthenticationManager();
 	}
 
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-		return httpSecurity.cors(c -> c.disable()).csrf(c -> c.disable())
-				.sessionManagement(session -> session
-			            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-			        )
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/", "/assets/**",
-//																		"/wms_sem4/users/login",
-						"/wms_sem4/users/loginProcess").permitAll()
-						.requestMatchers("/wms_sem4/users/createCompanyStaff", "/wms_sem4/wms_sem4/products/**")
+		return http
+				.addFilterBefore(debugFilter(), SecurityContextPersistenceFilter.class)
+				/* ---------- API → NO CSRF ---------- */
+				.csrf(csrf -> csrf.disable())
+
+				/* ---------- CORS (adjust later if needed) ---------- */
+				.cors(cors -> cors.disable())
+
+				/* ---------- AUTHORIZATION ---------- */
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/", "/assets/**", "/wms_sem4/users/login", "/wms_sem4/users/logout")
+						.permitAll()
+						.requestMatchers("/wms_sem4/users/createCompanyStaff", "/wms_sem4/products/**")
 						.hasAnyAuthority("ROLE_PORTAL_ADMIN", "ROLE_COMPANY_ADMIN")
 						.requestMatchers("/wms_sem4/users/**", "/wms_sem4/companies/**")
-						.hasAnyAuthority("ROLE_PORTAL_ADMIN")
-						.anyRequest().authenticated()
-//												   .requestMatchers("/patient/**").hasAnyRole("PATIENT")
-				).formLogin(form -> form
-//									   .loginPage("/users/login")
-						.loginProcessingUrl("/wms_sem4/users/loginProcess")
-						.usernameParameter("username")
-						.passwordParameter("password")
-						.successHandler((request, response, authentication) -> {
-							System.out.println("LOGIN SUCCESS");
-							String username = authentication.getName();
+						.hasAnyAuthority("ROLE_PORTAL_ADMIN").anyRequest().authenticated())
 
-							Users user = userService.findByUsername(username);
+				/* ---------- SESSION MANAGEMENT ---------- */
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 
-							HttpSession session = request.getSession();
-							session.setAttribute("userId", user.getId());
-							session.setAttribute("roleId", user.getRoles().getId());
-							if (user.getCompanies() != null && user.getCompanies().getId() != null) {
-								session.setAttribute("companyId", user.getCompanies().getId());
-							}
+				/* ---------- EXCEPTION HANDLING ---------- */
+				.exceptionHandling(ex -> ex
 
-							String accept = request.getHeader("Accept");
+						/* Not authenticated → 401 */
+						.authenticationEntryPoint((request, response, exAuth) -> {
+							response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+							response.setContentType("application/json");
+							response.getWriter().write("""
+									    {
+									      "error": "Authentication required"
+									    }
+									""");
+						})
 
-							if (accept != null && accept.contains("application/json")) {
-								// Flutter / API
-								response.setStatus(200);
-								response.setContentType("application/json");
-								response.getWriter().write("""
-										{
-										  "message": "Login successful",
-										  "userId": %d,
-										  "role": "%s"
-										}
-										""".formatted(user.getId(), user.getRoles().getRoleName()));
-
-								response.flushBuffer();
-							} else {
-								// Spring MVC
-//				                                Long roleId = user.getRoles().getId();
-//				                                if (roleId == 1) {
-//				                                    response.sendRedirect("/admin/dashboard");
-//				                                } else if (roleId == 2) {
-//				                                    response.sendRedirect("/company/dashboard");
-//				                                } else {
-//				                                    response.sendRedirect("/users/access-denied");
-//				                                }
-							}
-						}).failureHandler((request, response, exception) -> {
-							System.out.println("LOGIN FAILED");
-							String accept = request.getHeader("Accept");
-
-							if (accept != null && accept.contains("application/json")) {
-								response.setStatus(401);
-								response.getWriter().write("{\"error\":\"login failed\"}");
-							} else {
-//										        response.sendRedirect("/users/login?error");
-							}
+						/* Authenticated but forbidden → 403 */
+						.accessDeniedHandler((request, response, exDenied) -> {
+							response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+							response.setContentType("application/json");
+							response.getWriter().write("""
+									    {
+									      "error": "Access denied"
+									    }
+									""");
 						}))
-				// LOGOUT
-				.logout(logout -> logout.logoutUrl("/users/logout")
-						.logoutSuccessHandler((request, response, authentication) -> {
-							response.setStatus(200);
+
+				/* ---------- LOGOUT ---------- */
+				.logout(logout -> logout.logoutUrl("/wms_sem4/users/logout").invalidateHttpSession(true)
+						.deleteCookies("JSESSIONID").logoutSuccessHandler((req, res, auth) -> {
+							res.setStatus(HttpServletResponse.SC_OK);
+							res.setContentType("application/json");
+							res.getWriter().write("""
+									    {
+									      "message": "Logout successful"
+									    }
+									""");
 						}))
-				// ACCESS DENIED → 403
-				.exceptionHandling(ex -> ex.accessDeniedHandler((request, response, accessDeniedException) -> {
-					response.setStatus(403);
-					response.setContentType("application/json");
-					response.getWriter().write("""
-							{ "error": "This function is not allowed for this account" }
-							""");
-				}).authenticationEntryPoint((request, response, authException) -> {
-					System.out.println("LOGIN AUTH ENTRY");
-					String accept = request.getHeader("Accept");
-					if (accept != null && accept.contains("application/json")) {
-						response.setStatus(401);
-						response.setContentType("application/json");
-						response.getWriter().write("""
-								{ "error": "Authentication required" }
-								""");
-					}
-				})).build();
+
+				/* ---------- NO formLogin ---------- */
+				.build();
 	}
 
 	@Bean
