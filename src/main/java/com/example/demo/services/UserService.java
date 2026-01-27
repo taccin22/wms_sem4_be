@@ -17,6 +17,8 @@ public interface UserService extends UserDetailsService{
 	
 	public UserDTO findById(Long id);
 	
+	public UserDTO findByUsernameDTO(String username);
+	
 	public boolean createCompanyAdmin(UserInsertDTO userInsertDTO);
 	
 	public boolean createCompanyStaff(UserInsertDTO userInsertDTO);

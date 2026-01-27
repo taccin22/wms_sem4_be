@@ -157,6 +157,16 @@ public class UserServiceImpl implements UserService {
 	public Users findByUsername(String username) {
 		return userRepository.findByUsername(username);
 	}
+
+	@Override
+	public UserDTO findByUsernameDTO(String username) {
+		Users user = userRepository.findByUsername(username);
+		if(user != null) {
+			return modelMapper.map(user, UserDTO.class);
+		}else {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user found");
+		}
+	}
 	
 	
 }

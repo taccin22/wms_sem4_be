@@ -4,11 +4,13 @@ public class LoginResult {
     private boolean success;
     private Long userId;
     private String role;
+    private Long companyId;
 
-    public LoginResult(boolean success, Long userId, String role) {
+    public LoginResult(boolean success, Long userId, String role, Long comapyId) {
         this.success = success;
         this.userId = userId;
         this.role = role;
+        this.companyId = comapyId;
     }
 
 	public boolean isSuccess() {
@@ -35,5 +37,13 @@ public class LoginResult {
 		this.role = role;
 	}
 
-    
+	public Long getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
+	}
+	
+	
 }

@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -63,16 +64,23 @@ public class SecurityConfiguration {
 
 				/* ---------- AUTHORIZATION ---------- */
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers("/", "/assets/**", "/wms_sem4/users/login", "/wms_sem4/users/logout")
+						.requestMatchers("/", "/assets/**","/wms_sem4/users/debug/auth", "/wms_sem4/users/login", "/wms_sem4/users/logout")
 						.permitAll()
 						.requestMatchers("/wms_sem4/users/createCompanyStaff", "/wms_sem4/products/**")
 						.hasAnyAuthority("ROLE_PORTAL_ADMIN", "ROLE_COMPANY_ADMIN")
+						.requestMatchers("/wms_sem4/users/find-by-username/**")
+						.hasAnyAuthority("ROLE_COMPANY_ADMIN", "ROLE_COMPANY_STAFF")
 						.requestMatchers("/wms_sem4/users/**", "/wms_sem4/companies/**")
 						.hasAnyAuthority("ROLE_PORTAL_ADMIN").anyRequest().authenticated())
 
 				/* ---------- SESSION MANAGEMENT ---------- */
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-
+				
+				/* ---------- AUTH STORAGE ---------- */
+				.securityContext(securityContext ->
+	            securityContext.securityContextRepository(
+	                new HttpSessionSecurityContextRepository())
+				)	
 				/* ---------- EXCEPTION HANDLING ---------- */
 				.exceptionHandling(ex -> ex
 
