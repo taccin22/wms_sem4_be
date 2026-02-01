@@ -17,11 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.dtos.CategoriesDTO;
+//import com.example.demo.dtos.CategoriesDTO;
 import com.example.demo.dtos.ProductsDTO;
-import com.example.demo.entities.Categories;
-import com.example.demo.repositories.CategoryRepository;
-import com.example.demo.services.CategoryService;
+//import com.example.demo.entities.Categories;
+//import com.example.demo.repositories.CategoryRepository;
+//import com.example.demo.services.CategoryService;
 import com.example.demo.services.ProductService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @RestController()
 @RequestMapping("wms_sem4/products")
@@ -29,17 +33,44 @@ public class ProductsController {
 	
 	@Autowired
 	private ProductService productService;
-	@Autowired
-	private CategoryRepository categoryRepository;
 	
-	@GetMapping(value = "filter-product-comp/{companyId}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	@Autowired
+	private HttpSession httpSession;
+	
+	@Autowired
+//	private CategoryRepository categoryRepository;
+	
+	@GetMapping(value = "find-all", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProductsDTO>> findAll() {
+		try {
+			return new ResponseEntity<List<ProductsDTO>>(productService.findAll(),HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<List<ProductsDTO>>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping(value = "find-by-id/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProductsDTO> findById(@PathVariable("id") Long id) {
+		try {
+			return new ResponseEntity<ProductsDTO>(productService.findById(id), HttpStatus.OK);
+		} catch (Exception e) {
+			 e.printStackTrace();
+			return new ResponseEntity<ProductsDTO>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@GetMapping(value = "filter-product-comp", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<ProductsDTO>> filterProductComp(
-			@PathVariable("companyId") Long companyId, 
+//			@RequestParam("companyId") Long companyId, 
+			HttpServletRequest httpRequest,
+			
 			@RequestBody ProductsDTO req
 			){
 		try {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			System.out.println(auth);
+			Long companyId = Long.parseLong(httpSession.getAttribute("companyId").toString());
 //			Categories category = categoryRepository.findByName(categoryName);
 			return new ResponseEntity<List<ProductsDTO>>(productService.filterProductComp(
 					companyId, 
@@ -56,5 +87,41 @@ public class ProductsController {
 			return new ResponseEntity<List<ProductsDTO>>(HttpStatus.BAD_REQUEST);
 		}
 	}
+	
+	@GetMapping(value = "find-all-comp", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<ProductsDTO>> findAllComp(
+//			@RequestParam("companyId") Long companyId, 
+//			HttpServletRequest httpRequest
+			){
+				try {
+					Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+					System.out.println(auth);
+					Long companyId = Long.parseLong(httpSession.getAttribute("companyId").toString());
+		//			Categories category = categoryRepository.findByName(categoryName);
+					return new ResponseEntity<List<ProductsDTO>>(productService.findAllComp(companyId),HttpStatus.OK);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return new ResponseEntity<List<ProductsDTO>>(HttpStatus.BAD_REQUEST);
+				}
+			}
+	
+	@GetMapping(value = "find-by-id-comp/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ProductsDTO> findAllComp(@PathVariable("id") Long id) {
+		try {
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			System.out.println(auth);
+			Long companyId = Long.parseLong(httpSession.getAttribute("companyId").toString());
+			return new ResponseEntity<ProductsDTO>(productService.findByIdComp(companyId, id),HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<ProductsDTO>(HttpStatus.BAD_REQUEST);
+		}
+		
+	}
+	
+	
+	
+	
+
 
 }

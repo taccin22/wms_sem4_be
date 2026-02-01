@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import com.example.demo.WmsSem4BeApplication;
 import com.example.demo.dtos.CompaniesDTO;
-import com.example.demo.dtos.UserDTO;
+import com.example.demo.dtos.UsersDTO;
 import com.example.demo.dtos.UserInsertDTO;
 import com.example.demo.dtos.UserUpdateDTO;
 import com.example.demo.entities.Companies;
@@ -53,16 +53,16 @@ public class UserServiceImpl implements UserService {
 
 
 	@Override
-	public List<UserDTO> findAll() {
+	public List<UsersDTO> findAll() {
 		List<Users> users = userRepository.findAll();
-		return modelMapper.map(users, new TypeToken<List<UserDTO>>() {}.getType());
+		return modelMapper.map(users, new TypeToken<List<UsersDTO>>() {}.getType());
 	}
 
 	@Override
-	public UserDTO findById(Long id) {
+	public UsersDTO findById(Long id) {
 		Users user = userRepository.findById(id).get();
 		if(user != null) {
-			return modelMapper.map(user, UserDTO.class);
+			return modelMapper.map(user, UsersDTO.class);
 		}else {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user found");
 		}
@@ -159,10 +159,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserDTO findByUsernameDTO(String username) {
+	public UsersDTO findByUsernameDTO(String username) {
 		Users user = userRepository.findByUsername(username);
 		if(user != null) {
-			return modelMapper.map(user, UserDTO.class);
+			return modelMapper.map(user, UsersDTO.class);
 		}else {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No user found");
 		}

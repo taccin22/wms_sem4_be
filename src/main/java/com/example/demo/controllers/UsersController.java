@@ -26,7 +26,7 @@ import com.example.demo.dtos.CompaniesDTO;
 import com.example.demo.dtos.CompaniesInsertDTO;
 import com.example.demo.dtos.LoginRequest;
 import com.example.demo.dtos.LoginResult;
-import com.example.demo.dtos.UserDTO;
+import com.example.demo.dtos.UsersDTO;
 import com.example.demo.dtos.UserInsertDTO;
 import com.example.demo.dtos.UserUpdateDTO;
 import com.example.demo.entities.Users;
@@ -49,27 +49,27 @@ public class UsersController {
 	private BCryptPasswordEncoder passwordEncoder;
 	
 	@GetMapping(value = "find-all", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<UserDTO>> findAll() {
+	public ResponseEntity<List<UsersDTO>> findAll() {
 		try {
-			return new ResponseEntity<List<UserDTO>>(userService.findAll(), HttpStatus.OK);
+			return new ResponseEntity<List<UsersDTO>>(userService.findAll(), HttpStatus.OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ResponseEntity<List<UserDTO>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<List<UsersDTO>>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
 	@GetMapping(value = "find-by-id/{id}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public ResponseEntity<UserDTO> findById(@PathVariable("id") Long id) {
+	public ResponseEntity<UsersDTO> findById(@PathVariable("id") Long id) {
 		try {
-			return new ResponseEntity<UserDTO>(userService.findById(id), HttpStatus.OK);
+			return new ResponseEntity<UsersDTO>(userService.findById(id), HttpStatus.OK);
 		} catch (Exception e) {
 			 e.printStackTrace();
-			return new ResponseEntity<UserDTO>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<UsersDTO>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
 	@GetMapping(value = "find-by-username/{username}", produces = MimeTypeUtils.APPLICATION_JSON_VALUE)
-	public ResponseEntity<UserDTO> findByUsername(@PathVariable String username) {
+	public ResponseEntity<UsersDTO> findByUsername(@PathVariable String username) {
 
 	    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	    System.out.println("AUTH = " + auth);

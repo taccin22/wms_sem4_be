@@ -4,20 +4,20 @@ import java.util.List;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-import com.example.demo.dtos.UserDTO;
+import com.example.demo.dtos.UsersDTO;
 import com.example.demo.dtos.UserInsertDTO;
 import com.example.demo.dtos.UserUpdateDTO;
 import com.example.demo.entities.Users;
 
 public interface UserService extends UserDetailsService{
 
-	public List<UserDTO> findAll();
+	public List<UsersDTO> findAll();
 	
 	public Users findByUsername(String username);
 	
-	public UserDTO findById(Long id);
+	public UsersDTO findById(Long id);
 	
-	public UserDTO findByUsernameDTO(String username);
+	public UsersDTO findByUsernameDTO(String username);
 	
 	public boolean createCompanyAdmin(UserInsertDTO userInsertDTO);
 	

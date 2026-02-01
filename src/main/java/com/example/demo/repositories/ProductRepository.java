@@ -62,7 +62,6 @@ public interface ProductRepository extends JpaRepository<Products, Long>{
 		            OR p.status = :status
 		          )
 		""")
-
 	public List<Products> filterProductComp(
 			@Param("companyId") Long companyId, 
 			@Param("sku") String sku, 
@@ -74,5 +73,23 @@ public interface ProductRepository extends JpaRepository<Products, Long>{
 			@Param("salePrice") BigDecimal salePrice, 
 			@Param("status") Byte status
 			);
-
+	
+	@Query("""
+			SELECT p FROM Products p
+		    WHERE p.companies.id = :companyId
+			""")
+	public List<Products> findAllComp(
+			@Param("companyId") Long companyId
+			);
+	
+	@Query("""
+			SELECT p FROM Products p
+		    WHERE p.companies.id = :companyId
+			   AND p.id = :id
+			""")
+	public Products findByIdComp(
+			@Param("companyId") Long companyId,
+			@Param("id") Long id
+			);
+	
 }
