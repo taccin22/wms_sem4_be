@@ -20,5 +20,5 @@ public interface ProductService {
 			BigDecimal salePrice, 
 			Byte status
 			);
-
+	
 }

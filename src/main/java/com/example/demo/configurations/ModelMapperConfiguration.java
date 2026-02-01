@@ -98,6 +98,18 @@ public class ModelMapperConfiguration {
 	
 		});
 		
+		mapper.addMappings(new PropertyMap<Categories, CategoriesDTO>(){
+
+			@Override
+			protected void configure() {
+				map().setId(source.getId());
+				map().setCompanyId(source.getCompanies().getId());
+				map().setCompanyName(source.getCompanies().getCompanyName());
+				map().setParentId(source.getCategories().getId());
+			}
+	
+		});
+		
 		mapper.addMappings(new PropertyMap<Products, ProductsDTO>(){
 
 			@Override
