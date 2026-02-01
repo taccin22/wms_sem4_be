@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 
 import com.example.demo.dtos.ProductsDTO;
+import com.example.demo.dtos.ProductsInsertDTO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -32,4 +33,7 @@ public interface ProductService {
 			Byte status
 			);
 
+	public boolean createProduct(ProductsInsertDTO productsInsertDTO);
+	
+	public boolean updateProduct(ProductsDTO productsDTO);
 }

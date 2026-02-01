@@ -66,6 +66,8 @@ public class SecurityConfiguration {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/", "/assets/**","/wms_sem4/users/debug/auth", "/wms_sem4/users/login", "/wms_sem4/users/logout")
 						.permitAll()
+						.requestMatchers("/wms_sem4/products/createProduct", "/wms_sem4/products/updateProduct")
+						.hasAnyAuthority("ROLE_COMPANY_ADMIN")
 						.requestMatchers("/wms_sem4/users/createCompanyStaff", "/wms_sem4/products/**")
 						.hasAnyAuthority("ROLE_PORTAL_ADMIN", "ROLE_COMPANY_ADMIN")
 						.requestMatchers("/wms_sem4/users/find-by-username/**")

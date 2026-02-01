@@ -11,6 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.dtos.CategoriesDTO;
 //import com.example.demo.dtos.CategoriesDTO;
 import com.example.demo.dtos.ProductsDTO;
+import com.example.demo.dtos.ProductsInsertDTO;
+import com.example.demo.dtos.UserInsertDTO;
 //import com.example.demo.entities.Categories;
 //import com.example.demo.repositories.CategoryRepository;
 //import com.example.demo.services.CategoryService;
@@ -120,8 +124,20 @@ public class ProductsController {
 	}
 	
 	
-	
+	@PostMapping(value = "createProduct", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void> createProduct(@RequestBody ProductsInsertDTO productsInsertDTO) {
+			
+			productService.createProduct(productsInsertDTO);
+			return new ResponseEntity<Void>(HttpStatus.OK);
+
+	}
 	
 
+	@PutMapping(value = "updateProduct", consumes = MimeTypeUtils.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void> updateProduct(@RequestBody ProductsDTO productsDTO) {
+			
+			productService.updateProduct(productsDTO);
+			return new ResponseEntity<Void>(HttpStatus.OK);
 
+	}
 }

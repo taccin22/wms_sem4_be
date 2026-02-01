@@ -5,32 +5,14 @@ import java.math.BigDecimal;
 public class ProductsInsertDTO {
     
     private Long categoryId;
-    private String categoryName;
-
-    
     private Long unitId;
     private String unitName;
-
-    
     private Long companyId;
-    private String companyName;
-
-    
     private String sku;
-
-    
     private String barcode;
-
-    
     private String name;
-
-    
     private BigDecimal costPrice;
-
-    
     private BigDecimal salePrice;
-
-
     private Byte status;
 
 
@@ -41,16 +23,6 @@ public class ProductsInsertDTO {
 
 	public void setCategoryId(Long categoryId) {
 		this.categoryId = categoryId;
-	}
-
-
-	public String getCategoryName() {
-		return categoryName;
-	}
-
-
-	public void setCategoryName(String categoryName) {
-		this.categoryName = categoryName;
 	}
 
 
@@ -81,16 +53,6 @@ public class ProductsInsertDTO {
 
 	public void setCompanyId(Long companyId) {
 		this.companyId = companyId;
-	}
-
-
-	public String getCompanyName() {
-		return companyName;
-	}
-
-
-	public void setCompanyName(String companyName) {
-		this.companyName = companyName;
 	}
 
 
@@ -154,16 +116,13 @@ public class ProductsInsertDTO {
 	}
 
 
-	public ProductsInsertDTO(Long categoryId, String categoryName, Long unitId, String unitName, Long companyId,
-			String companyName, String sku, String barcode, String name, BigDecimal costPrice, BigDecimal salePrice,
-			Byte status) {
+	public ProductsInsertDTO(Long categoryId, Long unitId, String unitName, Long companyId, String sku, String barcode,
+			String name, BigDecimal costPrice, BigDecimal salePrice, Byte status) {
 		super();
 		this.categoryId = categoryId;
-		this.categoryName = categoryName;
 		this.unitId = unitId;
 		this.unitName = unitName;
 		this.companyId = companyId;
-		this.companyName = companyName;
 		this.sku = sku;
 		this.barcode = barcode;
 		this.name = name;
@@ -171,7 +130,6 @@ public class ProductsInsertDTO {
 		this.salePrice = salePrice;
 		this.status = status;
 	}
-
 
 	public ProductsInsertDTO() {
 		super();

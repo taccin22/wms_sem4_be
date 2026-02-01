@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import com.example.demo.dtos.CategoriesDTO;
 import com.example.demo.dtos.CategoriesDTO;
 import com.example.demo.dtos.ProductsDTO;
+import com.example.demo.dtos.ProductsInsertDTO;
 import com.example.demo.entities.Categories;
+import com.example.demo.entities.Companies;
 import com.example.demo.entities.Categories;
 import com.example.demo.entities.Products;
 import com.example.demo.repositories.CategoryRepository;
@@ -20,6 +22,7 @@ import com.example.demo.repositories.ProductRepository;
 import com.example.demo.services.ProductService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -33,7 +36,7 @@ public class ProductServiceImpl implements ProductService {
 	@Autowired
 	private ModelMapper modelMapper;
 	@Autowired
-	private HttpServletRequest httpRequest;
+	private HttpSession httpSession;
 
 	@Override
 	public List<ProductsDTO> filterProductComp(Long companyId, String sku, String barcode, String name, Long categoryId,
@@ -65,6 +68,36 @@ public class ProductServiceImpl implements ProductService {
 	public ProductsDTO findByIdComp(Long companyId, Long id) {
 		Products products = productRepository.findByIdComp(companyId, id);
 		return modelMapper.map(products, ProductsDTO.class);
+	}
+
+	@Override
+	public boolean createProduct(ProductsInsertDTO productsInsertDTO) {
+		try {
+			Products product = modelMapper.map(productsInsertDTO, Products.class);
+			Long companyId = Long.parseLong(httpSession.getAttribute("companyId").toString());
+			Companies company = companyRepository.findById(companyId).get(); 
+			product.setCompanies(company);
+			productRepository.save(product);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean updateProduct(ProductsDTO productsDTO) {
+		try {
+			Products product = modelMapper.map(productsDTO, Products.class);
+			Long companyId = Long.parseLong(httpSession.getAttribute("companyId").toString());
+			Companies company = companyRepository.findById(companyId).get(); 
+			product.setCompanies(company);
+			productRepository.save(product);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }
